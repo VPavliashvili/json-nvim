@@ -1,0 +1,40 @@
+            features
+ 1) switch every key to PascalCase
+ 2) switch every key to camelCase
+ 3) unescape whole file (recursively)
+ 4) escape whole file (recursively)
+ 5) unescape selection
+ 6) escape selection
+ 7) minimize selection
+ 8) format selectoin
+
+
+
+
+
+
+
+        
+            instructions
+
+        both for same file
+                |
+                v
+ - generally formatting json -> %!jq
+ - generally minimizing json -> %!jq -c
+
+
+ -  7) and 8) use selection and than :%!jq
+
+
+
+
+
+
+
+
+
+
+
+
+
