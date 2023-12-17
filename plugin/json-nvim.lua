@@ -15,10 +15,18 @@ end)
 
 command("JsonSelectionMinify", function()
     local selection = json_nvim.get_visual_selection()
+    local replacement = ""
 
-    local cmd = string.format("echo '%s' | jq . -c", selection)
-    local result = vim.fn.system(cmd)
-    local replacement = vim.fn.substitute(result, [[\n]], '', 'g')
+    if vim.loop.os_uname().sysname == "Windows_NT" then
+        local fmt_selection = vim.fn.substitute(selection, [[\n]], '', 'g')
+        local cmd = string.format('echo %s | jq . -r -c', fmt_selection)
+        local result = vim.fn.system(cmd)
+        replacement = vim.fn.substitute(result, [[\n]], '', 'g')
+    else
+        local cmd = string.format("echo '%s' | jq . -c", selection)
+        local result = vim.fn.system(cmd)
+        replacement = vim.fn.substitute(result, [[\n]], '', 'g')
+    end
 
     vim.fn.setreg(vim.v.register, replacement)
     local vimc = [[
@@ -28,5 +36,4 @@ command("JsonSelectionMinify", function()
 
     vim.cmd(vimc)
     vim.cmd.noh()
-
 end, { range = true })
