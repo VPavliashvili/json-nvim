@@ -1,5 +1,8 @@
 local M = {}
 
+-- most of the functions below
+-- are just in case
+
 function M.get_visual_selection()
     local s_start = vim.fn.getpos("'<")
     local s_end = vim.fn.getpos("'>")
@@ -19,6 +22,33 @@ function M.get_selection_positions()
         s_start = vim.fn.getpos("'<"),
         s_end = vim.fn.getpos("'>")
     }
+end
+
+function M.get_buffer_content_as_string()
+    local content = vim.api.nvim_buf_get_lines(0, 0, vim.api.nvim_buf_line_count(0), false)
+    return table.concat(content, "\n")
+end
+
+function M.get_buffer_content_as_string_up_to_cursor_pos()
+    local line, _ = vim.api.nvim_win_get_cursor(0)
+    local content = vim.api.nvim_buf_get_lines(0, 0, line[1], false)
+    return table.concat(content, "\n")
+end
+
+-- print content of all children of treesitter node
+function M.get_tsnode_children_content(tsnode)
+    local count = tsnode:child_count()
+    local r = {}
+    for i = 0, count - 1 do
+        local child = tsnode:child(i)
+        local buf_id = vim.api.nvim_get_current_buf()
+        local content = vim.treesitter.get_node_text(child, buf_id)
+        if content == nil then
+            content = "child on index " .. i .. " was nil"
+        end
+        table.insert(r, content)
+    end
+    return r
 end
 
 return M

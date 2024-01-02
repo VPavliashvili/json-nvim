@@ -28,7 +28,11 @@
 
 
 
-
+    -- might find useful
+local tp = cur_node:type()
+if tp ~= "object" and tp ~= "array" then
+    return
+end
 
 
 
