@@ -12,18 +12,16 @@ end
 
 function M.minify_selection()
     local selection = utils.get_visual_selection()
+    local is_invalid = utils.validate_jq_input(selection)
 
-    local cmd = utils.format_command_according_os('jq . -e', selection)
-    local is_valid = vim.fn.system(cmd)
-
-    if is_valid:find("error") then
+    if is_invalid then
         print("marked text is not json object or array and can't be minified")
         return
     end
 
     local cur_node = vim.treesitter.get_node({})
     if cur_node == nil then
-        print("can't get treesitter node")
+        error("can't get treesitter node")
         return
     end
 
@@ -32,16 +30,13 @@ function M.minify_selection()
     -- json array or object which should be minified
     local target_json = vim.treesitter.get_node_text(cur_node, buf_id)
     if target_json == nil or target_json == "" then
-        print("content is nil or empty")
+        error("content is nil or empty")
         return
     end
 
-    cmd = utils.format_command_according_os('jq . -c', target_json)
-
-    local minified = vim.fn.system(cmd)
-    minified = minified:gsub("[\n\r]", "")
+    local minified = utils.get_minified_jq(target_json)
     if minified == nil or minified == "" then
-        print(minified)
+        error("result was nil or empty")
         return
     end
 

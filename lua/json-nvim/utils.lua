@@ -51,14 +51,31 @@ function M.get_tsnode_children_content(tsnode)
     return r
 end
 
-function M.format_command_according_os(jq_command, input)
-    local cmd = ""
+function M.validate_jq_input(input)
+    local is_invalid
     if vim.fn.has('win32') == 1 then
-        cmd = string.format('echo %s | %s', input, jq_command)
+        local one_line = vim.fn.substitute(input, [[\n]], '', 'g')
+        local cmd = string.format('echo %s | jq . -e', one_line)
+        local result = vim.fn.system(cmd)
+        result = vim.fn.substitute(result, [[\n]], '', 'g')
+
+        is_invalid = result:find("jq . %-e") or result:find("error")
     else
-        cmd = string.format("echo '%s' | %s", input, jq_command)
+        error("needs implementation for unix")
     end
-    return cmd
+    return is_invalid
+end
+
+function M.get_minified_jq(input)
+    if vim.fn.has('win32') == 1 then
+        local one_line = vim.fn.substitute(input, [[\n]], '', 'g')
+        local cmd = string.format('echo %s | jq . -c', one_line)
+        local result = vim.fn.system(cmd)
+        result = vim.fn.substitute(result, [[\n]], '', 'g')
+        return result
+    else
+        error("needs implementation for unix")
+    end
 end
 
 function M.replace_tsnode_text(node, replacement_text)
