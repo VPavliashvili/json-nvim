@@ -53,29 +53,38 @@ end
 
 function M.validate_jq_input(input)
     local is_invalid
+    local cmd
+    local result
     if vim.fn.has('win32') == 1 then
         local one_line = vim.fn.substitute(input, [[\n]], '', 'g')
-        local cmd = string.format('echo %s | jq . -e', one_line)
-        local result = vim.fn.system(cmd)
+        cmd = string.format('echo %s | jq . -e', one_line)
+        result = vim.fn.system(cmd)
         result = vim.fn.substitute(result, [[\n]], '', 'g')
 
         is_invalid = result:find("jq . %-e") or result:find("error")
     else
-        error("needs implementation for unix")
+        cmd = string.format("echo '%s' | jq -e .", input)
+        result = vim.fn.system(cmd)
+
+        is_invalid = result:find("error")
     end
     return is_invalid
 end
 
 function M.get_minified_jq(input)
+    local result
+    local cmd
     if vim.fn.has('win32') == 1 then
         local one_line = vim.fn.substitute(input, [[\n]], '', 'g')
-        local cmd = string.format('echo %s | jq . -c', one_line)
-        local result = vim.fn.system(cmd)
+        cmd = string.format('echo %s | jq . -c', one_line)
+        result = vim.fn.system(cmd)
         result = vim.fn.substitute(result, [[\n]], '', 'g')
-        return result
     else
-        error("needs implementation for unix")
+        cmd = string.format("echo '%s' | jq . -c", input)
+        result = vim.fn.system(cmd)
+        result = result:gsub("[\n\r]", "")
     end
+    return result
 end
 
 function M.replace_tsnode_text(node, replacement_text)
