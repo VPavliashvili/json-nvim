@@ -12,7 +12,8 @@ end
 
 function M.minify_selection()
     local selection = utils.get_visual_selection()
-    local cmd = string.format("echo '%s' | jq -e .", selection)
+
+    local cmd = utils.format_command_according_os('jq . -e', selection)
     local is_valid = vim.fn.system(cmd)
 
     if is_valid:find("error") then
@@ -35,11 +36,7 @@ function M.minify_selection()
         return
     end
 
-    if vim.loop.os_uname().sysname == "Windows_NT" then
-        cmd = string.format('echo %s | jq . -c', target_json)
-    else
-        cmd = string.format("echo '%s' | jq . -c", target_json)
-    end
+    cmd = utils.format_command_according_os('jq . -c', target_json)
 
     local minified = vim.fn.system(cmd)
     minified = minified:gsub("[\n\r]", "")
@@ -48,18 +45,7 @@ function M.minify_selection()
         return
     end
 
-    local start_row, start_col, end_row, end_col = cur_node:range()
-    vim.api.nvim_buf_set_text(
-        vim.api.nvim_get_current_buf(),
-        start_row,
-        start_col,
-        end_row,
-        end_col,
-        { minified }
-    )
-
-    -- local r = { old = target_json, new = minified, tp = cur_node:type() }
-    -- vim.print(r)
+    utils.replace_tsnode_text(cur_node, minified)
 end
 
 function M.format_selection()

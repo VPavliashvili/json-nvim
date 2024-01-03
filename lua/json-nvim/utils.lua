@@ -51,4 +51,26 @@ function M.get_tsnode_children_content(tsnode)
     return r
 end
 
+function M.format_command_according_os(jq_command, input)
+    local cmd = ""
+    if vim.fn.has('win32') == 1 then
+        cmd = string.format('echo %s | %s', input, jq_command)
+    else
+        cmd = string.format("echo '%s' | %s", input, jq_command)
+    end
+    return cmd
+end
+
+function M.replace_tsnode_text(node, replacement_text)
+    local start_row, start_col, end_row, end_col = node:range()
+    vim.api.nvim_buf_set_text(
+        vim.api.nvim_get_current_buf(),
+        start_row,
+        start_col,
+        end_row,
+        end_col,
+        { replacement_text }
+    )
+end
+
 return M
