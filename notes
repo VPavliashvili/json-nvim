@@ -5,10 +5,12 @@
  4) escape whole file (recursively)
  5) unescape selection
  6) escape selection
- 7) minimize selection
- 8) format selectoin
+ 7) minimize selection +
+ 8) format selectoin +
  9) minimize object or array token under cursor
  10) format object or array token under cursor
+ 11) minimize file +
+ 12) format file +
 
 
 

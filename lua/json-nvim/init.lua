@@ -11,8 +11,7 @@ function M.MinifyFile()
 end
 
 function M.FormatSelection()
-    -- local temp = u.minify_current_ts_json_object_or_array()
-    -- return temp
+    jn.format_selection()
 end
 
 function M.MinifySelection()

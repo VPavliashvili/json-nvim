@@ -3,6 +3,17 @@ local M = {}
 -- most of the functions below
 -- are just in case
 
+function M.split(inputstr, sep)
+    if sep == nil then
+        sep = "%s"
+    end
+    local t = {}
+    for str in string.gmatch(inputstr, "([^" .. sep .. "]+)") do
+        table.insert(t, str)
+    end
+    return t
+end
+
 function M.get_visual_selection()
     local s_start = vim.fn.getpos("'<")
     local s_end = vim.fn.getpos("'>")
@@ -97,6 +108,19 @@ function M.replace_tsnode_text(node, replacement_text)
         end_col,
         { replacement_text }
     )
+end
+
+function M.get_formatted_jq(input)
+    local result
+    local cmd
+    if vim.fn.has('win32') == 1 then
+        error("need implementation")
+    else
+        cmd    = string.format("echo '%s' | jq .", input)
+        result = vim.fn.system(cmd)
+    end
+
+    return result
 end
 
 return M
