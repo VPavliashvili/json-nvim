@@ -102,14 +102,7 @@ function M.format_selection()
         lines[i] = space .. lines[i]
     end
     local start_row, start_col, end_row, end_col = value_node:range()
-    vim.api.nvim_buf_set_text(
-        vim.api.nvim_get_current_buf(),
-        start_row,
-        start_col,
-        end_row,
-        end_col,
-        lines
-    )
+    vim.api.nvim_buf_set_text(vim.api.nvim_get_current_buf(), start_row, start_col, end_row, end_col, lines)
 end
 
 return M

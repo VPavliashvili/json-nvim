@@ -25,13 +25,13 @@ function M.get_visual_selection()
     else
         lines[n_lines] = string.sub(lines[n_lines], 1, s_end[3])
     end
-    return table.concat(lines, '\n')
+    return table.concat(lines, "\n")
 end
 
 function M.get_selection_positions()
     return {
         s_start = vim.fn.getpos("'<"),
-        s_end = vim.fn.getpos("'>")
+        s_end = vim.fn.getpos("'>"),
     }
 end
 
@@ -66,11 +66,11 @@ function M.validate_jq_input(input)
     local is_invalid
     local cmd
     local result
-    if vim.fn.has('win32') == 1 then
-        local one_line = vim.fn.substitute(input, [[\n]], '', 'g')
-        cmd = string.format('echo %s | jq . -e', one_line)
+    if vim.fn.has("win32") == 1 then
+        local one_line = vim.fn.substitute(input, [[\n]], "", "g")
+        cmd = string.format("echo %s | jq . -e", one_line)
         result = vim.fn.system(cmd)
-        result = vim.fn.substitute(result, [[\n]], '', 'g')
+        result = vim.fn.substitute(result, [[\n]], "", "g")
 
         is_invalid = result:find("jq . %-e") or result:find("error")
     else
@@ -85,11 +85,11 @@ end
 function M.get_minified_jq(input)
     local result
     local cmd
-    if vim.fn.has('win32') == 1 then
-        local one_line = vim.fn.substitute(input, [[\n]], '', 'g')
-        cmd = string.format('echo %s | jq . -c', one_line)
+    if vim.fn.has("win32") == 1 then
+        local one_line = vim.fn.substitute(input, [[\n]], "", "g")
+        cmd = string.format("echo %s | jq . -c", one_line)
         result = vim.fn.system(cmd)
-        result = vim.fn.substitute(result, [[\n]], '', 'g')
+        result = vim.fn.substitute(result, [[\n]], "", "g")
     else
         cmd = string.format("echo '%s' | jq . -c", input)
         result = vim.fn.system(cmd)
@@ -113,10 +113,12 @@ end
 function M.get_formatted_jq(input)
     local result
     local cmd
-    if vim.fn.has('win32') == 1 then
-        error("need implementation")
+    if vim.fn.has("win32") == 1 then
+        local one_line = vim.fn.substitute(input, [[\n]], "", "g")
+        cmd = string.format("echo %s | jq .", one_line)
+        result = vim.fn.system(cmd)
     else
-        cmd    = string.format("echo '%s' | jq .", input)
+        cmd = string.format("echo '%s' | jq .", input)
         result = vim.fn.system(cmd)
     end
 
