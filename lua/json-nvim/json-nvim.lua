@@ -105,4 +105,20 @@ function M.format_selection()
     vim.api.nvim_buf_set_text(vim.api.nvim_get_current_buf(), start_row, start_col, end_row, end_col, lines)
 end
 
+function M.minify_token()
+    local token, target_json, err = utils.get_nearest_token_and_content()
+    if err then
+        error("could not get target_json")
+        return
+    end
+
+    local minified = utils.get_minified_jq(target_json)
+    if minified == nil or minified == "" then
+        error("result was nil or empty")
+        return
+    end
+
+    utils.replace_tsnode_text(token, minified)
+end
+
 return M

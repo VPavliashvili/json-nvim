@@ -1,6 +1,6 @@
 local M = {}
 
--- most of the functions below
+-- some of the functions below
 -- are just in case
 
 function M.split(inputstr, sep)
@@ -60,6 +60,31 @@ function M.get_tsnode_children_content(tsnode)
         table.insert(r, content)
     end
     return r
+end
+
+-- gets the nearest array or object token to cursor
+-- returns json content of that token
+function M.get_nearest_token_and_content()
+    local cur_node = vim.treesitter.get_node({})
+    if cur_node == nil then
+        -- token, content, is_error
+        return nil, "", true
+    end
+
+    local target = cur_node
+    while true do
+        if target:type() == "array" or target:type() == "object" then
+            break
+        end
+        target = target:parent()
+    end
+
+    local buf_id = vim.api.nvim_get_current_buf()
+    local content = vim.treesitter.get_node_text(target, buf_id)
+
+
+    -- token, content, is_error
+    return target, content, false
 end
 
 function M.validate_jq_input(input)

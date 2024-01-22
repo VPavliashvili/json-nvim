@@ -18,4 +18,8 @@ function M.MinifySelection()
     jn.minify_selection()
 end
 
+function M.MinifyToken()
+    jn.minify_token()
+end
+
 return M
