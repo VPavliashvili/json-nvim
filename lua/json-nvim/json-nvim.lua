@@ -74,16 +74,14 @@ function M.format_selection()
     local lines = utils.split(formatted, "\n\r")
 
     local indentation_node = value_node
-    local stop = 0
     while true do
+        if indentation_node:type() == "document" then
+            break
+        end
+
         if indentation_node:type() ~= "pair" then
             indentation_node = indentation_node:parent()
         else
-            break
-        end
-        stop = stop + 1
-        if stop == 100000 then
-            error("while loop stuck")
             break
         end
     end
