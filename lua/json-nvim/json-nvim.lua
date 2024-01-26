@@ -119,4 +119,46 @@ function M.minify_token()
     utils.replace_tsnode_text(token, minified)
 end
 
+function M.format_token()
+    local target_node, target_json, err = utils.get_nearest_token_and_content()
+    if err then
+        error("could not get target_json")
+        return
+    end
+
+    local formatted = utils.get_formatted_jq(target_json)
+    if formatted == nil or formatted == "" then
+        error("result was nil or empty")
+        return
+    end
+    local lines = utils.split(formatted, "\n\r")
+
+    local indentation_node = target_node
+    while true do
+        if indentation_node:type() == "document" or indentation_node:type() == "pair" then
+            break
+        else
+            indentation_node = indentation_node:parent()
+        end
+    end
+
+    local _, start_col = indentation_node:start()
+
+    if not (target_node:prev_named_sibling() ~= nil and target_node:prev_named_sibling():type() == "string") then
+        start_col = start_col + 2
+    end
+
+    local indentation = ""
+    for _ = 1, start_col do
+        indentation = indentation .. " "
+    end
+    for i = 2, #lines do
+        lines[i] = indentation .. lines[i]
+    end
+
+    local start_row, start_col, end_row, end_col = target_node:range()
+    local cur_buf = vim.api.nvim_get_current_buf()
+    vim.api.nvim_buf_set_text(cur_buf, start_row, start_col, end_row, end_col, lines)
+end
+
 return M

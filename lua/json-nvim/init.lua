@@ -18,6 +18,10 @@ function M.MinifySelection()
     jn.minify_selection()
 end
 
+function M.FormatToken()
+    jn.format_token()
+end
+
 function M.MinifyToken()
     jn.minify_token()
 end
