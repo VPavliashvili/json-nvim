@@ -27,6 +27,8 @@
  - generally formatting json -> %!jq
  - generally minimizing json -> %!jq -c
 
+ - 3) jq -r .
+ - 4) implemented
 
  -  7) and 8) use selection and than :%!jq
 

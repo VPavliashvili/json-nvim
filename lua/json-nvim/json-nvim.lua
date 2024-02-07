@@ -161,4 +161,16 @@ function M.format_token()
     vim.api.nvim_buf_set_text(cur_buf, start_row, start_col, end_row, end_col, lines)
 end
 
+function M.escape_file()
+    local root = utils.get_treesitter_root()
+
+    local content = utils.get_buffer_content_as_string()
+    local escaped = utils.get_escaped_input(content)
+    utils.replace_tsnode_text(root, escaped)
+end
+
+function M.unescape_file()
+    error("need implementation")
+end
+
 return M

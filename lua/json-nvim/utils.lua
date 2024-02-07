@@ -35,6 +35,20 @@ function M.get_selection_positions()
     }
 end
 
+function M.get_treesitter_root()
+    local cur_node = vim.treesitter.get_node({})
+    if cur_node == nil then
+        error("can't get current node of treesitter")
+    end
+    local root = cur_node:tree():root():child(0)
+
+    if root == nil then
+        error("could not get root")
+    end
+
+    return root
+end
+
 function M.get_buffer_content_as_string()
     local content = vim.api.nvim_buf_get_lines(0, 0, vim.api.nvim_buf_line_count(0), false)
     return table.concat(content, "\n")
@@ -81,7 +95,6 @@ function M.get_nearest_token_and_content()
 
     local buf_id = vim.api.nvim_get_current_buf()
     local content = vim.treesitter.get_node_text(target, buf_id)
-
 
     -- token, content, is_error
     return target, content, false
@@ -148,6 +161,27 @@ function M.get_formatted_jq(input)
     end
 
     return result
+end
+
+function M.get_escaped_input(input)
+    local cmd
+    if vim.fn.has("win32") == 1 then
+        local one_line = vim.fn.substitute(input, [[\n]], "", "g")
+        cmd = string.format("echo %s | jq . -c", one_line)
+        input = vim.fn.system(cmd)
+        input = vim.fn.substitute(input, [[\n]], "", "g")
+    else
+        cmd = string.format("echo '%s' | jq . -c", input)
+        input = vim.fn.system(cmd)
+        input = input:gsub("[\n\r]", "")
+    end
+
+    local pattern = '([\\"])'
+    local replacement = "\\%1"
+    local escaped = input:gsub(pattern, replacement)
+    escaped = '"' .. escaped .. '"'
+
+    return escaped
 end
 
 return M

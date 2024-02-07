@@ -26,4 +26,12 @@ function M.MinifyToken()
     jn.minify_token()
 end
 
+function M.UnescapeFile()
+    jn.unescape_file()
+end
+
+function M.EscapeFile()
+    jn.escape_file()
+end
+
 return M
