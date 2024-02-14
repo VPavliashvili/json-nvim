@@ -1,8 +1,8 @@
             features
  1) switch every key to PascalCase
  2) switch every key to camelCase
- 3) unescape whole file (recursively)
- 4) escape whole file (recursively)
+ 3) unescape whole file (recursively) +
+ 4) escape whole file (recursively) +
  5) unescape selection
  6) escape selection
  7) minimize selection +
@@ -27,20 +27,12 @@
  - generally formatting json -> %!jq
  - generally minimizing json -> %!jq -c
 
- - 3) jq -r .
- - 4) implemented
-
- -  7) and 8) use selection and than :%!jq
-
-
 
     -- might find useful
 local tp = cur_node:type()
 if tp ~= "object" and tp ~= "array" then
     return
 end
-
-
 
 
 
