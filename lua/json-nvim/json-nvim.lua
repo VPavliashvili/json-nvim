@@ -66,7 +66,7 @@ function M.format_selection()
         return
     end
 
-    local formatted = utils.get_formatted_jq(target_json)
+    local formatted = jq.get_formatted(target_json)
     if formatted == nil or formatted == "" then
         error("result was nil or empty")
         return
@@ -126,7 +126,7 @@ function M.format_token()
         return
     end
 
-    local formatted = utils.get_formatted_jq(target_json)
+    local formatted = jq.get_formatted(target_json)
     if formatted == nil or formatted == "" then
         error("result was nil or empty")
         return
