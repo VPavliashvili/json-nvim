@@ -1,5 +1,3 @@
-local jq = require("json-nvim.jq")
-
 local M = {}
 
 -- some of the functions below
@@ -118,24 +116,6 @@ function M.replace_tsnode_text(node, replacement)
             { replacement }
         )
     end
-end
-
-function M.get_escaped_input(input)
-    local compacted = jq.get_collapsed(input)
-
-    local pattern = '([\\"])'
-    local replacement = "\\%1"
-    local escaped = compacted:gsub(pattern, replacement)
-    escaped = '"' .. escaped .. '"'
-
-    return escaped
-end
-
-function M.get_unescaped_input(input)
-    local compacted = jq.get_collapsed(input)
-    local raw = jq.get_rawed(compacted)
-
-    return raw
 end
 
 return M

@@ -34,4 +34,12 @@ function M.EscapeFile()
     jn.escape_file()
 end
 
+function M.EscapeSelection()
+    jn.escape_selection()
+end
+
+function M.UnescapeSelection()
+    jn.unescape_selection()
+end
+
 return M
