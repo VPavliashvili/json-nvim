@@ -51,7 +51,7 @@ function M.get_rawed(input)
         result = vim.fn.system(cmd)
         result = vim.fn.substitute(result, [[\n]], "", "g")
     else
-        cmd = string.format("echo '%s' | jq -r", input)
+        cmd = string.format("echo '%s' | jq -r .", input)
         result = vim.fn.system(cmd)
         result = result:gsub("[\n\r]", "")
     end
