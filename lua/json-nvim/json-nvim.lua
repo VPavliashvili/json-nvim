@@ -1,3 +1,4 @@
+local formatter = require("json-nvim.formatter")
 local jq = require("json-nvim.jq")
 local minifier = require("json-nvim.minifier")
 local utils = require("json-nvim.utils")
@@ -5,7 +6,7 @@ local utils = require("json-nvim.utils")
 local M = {}
 
 function M.format_file()
-    vim.cmd("%!jq")
+    formatter.format_file()
 end
 
 function M.minify_file()

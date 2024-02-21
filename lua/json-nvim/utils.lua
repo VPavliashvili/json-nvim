@@ -102,16 +102,22 @@ function M.get_nearest_token_and_content()
     return target, content, false
 end
 
-function M.replace_tsnode_text(node, replacement_text)
-    local start_row, start_col, end_row, end_col = node:range()
-    vim.api.nvim_buf_set_text(
-        vim.api.nvim_get_current_buf(),
-        start_row,
-        start_col,
-        end_row,
-        end_col,
-        { replacement_text }
-    )
+function M.replace_tsnode_text(node, replacement)
+    if type(replacement) == "table" then
+        local start_row, start_col, end_row, end_col = node:range()
+        local buf = vim.api.nvim_get_current_buf()
+        vim.api.nvim_buf_set_text(buf, start_row, start_col, end_row, end_col, replacement)
+    else
+        local start_row, start_col, end_row, end_col = node:range()
+        vim.api.nvim_buf_set_text(
+            vim.api.nvim_get_current_buf(),
+            start_row,
+            start_col,
+            end_row,
+            end_col,
+            { replacement }
+        )
+    end
 end
 
 function M.get_escaped_input(input)
