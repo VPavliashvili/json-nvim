@@ -20,7 +20,23 @@ function M.minify_selection()
         print("marked text is not a valid json object or array and can't be minified")
         return
     end
-    minifier.minify_selection()
+
+    local target_node = vim.treesitter.get_node({})
+    if target_node == nil then
+        error("can't get treesitter node")
+        return
+    end
+
+    local buf_id = vim.api.nvim_get_current_buf()
+
+    -- json array or object which should be minified
+    local input_json = vim.treesitter.get_node_text(target_node, buf_id)
+    if input_json == nil or input_json == "" then
+        error("content is nil or empty")
+        return
+    end
+
+    minifier.minify_and_put(input_json, target_node)
 end
 
 function M.format_selection()
@@ -32,101 +48,41 @@ function M.format_selection()
         return
     end
 
-    local value_node = vim.treesitter.get_node({})
-    if value_node == nil then
+    local target_node = vim.treesitter.get_node({})
+    if target_node == nil then
         error("can't get treesitter node")
         return
     end
 
     local buf_id = vim.api.nvim_get_current_buf()
 
-    local target_json = vim.treesitter.get_node_text(value_node, buf_id)
-    if target_json == nil or target_json == "" then
+    local json = vim.treesitter.get_node_text(target_node, buf_id)
+    if json == nil or json == "" then
         error("content was nil or empty")
         return
     end
 
-    local formatted = jq.get_formatted(target_json)
-    if formatted == nil or formatted == "" then
-        error("result was nil or empty")
-        return
-    end
-    local lines = utils.split(formatted, "\n\r")
-
-    local indentation_node = value_node
-    while true do
-        if indentation_node:type() == "document" then
-            break
-        end
-
-        if indentation_node:type() ~= "pair" then
-            indentation_node = indentation_node:parent()
-        else
-            break
-        end
-    end
-
-    local _, start_col, _ = indentation_node:start()
-
-    if not (value_node:prev_named_sibling() ~= nil and value_node:prev_named_sibling():type() == "string") then
-        start_col = start_col + 2
-    end
-
-    local space = ""
-    for _ = 1, start_col do
-        space = space .. " "
-    end
-    for i = 2, #lines do
-        lines[i] = space .. lines[i]
-    end
-    local start_row, start_col, end_row, end_col = value_node:range()
-    vim.api.nvim_buf_set_text(vim.api.nvim_get_current_buf(), start_row, start_col, end_row, end_col, lines)
+    formatter.format_and_put(json, target_node)
 end
 
 function M.minify_token()
-    minifier.minify_token()
-end
-
-function M.format_token()
-    local target_node, target_json, err = utils.get_nearest_token_and_content()
+    local target_node, input_json, err = utils.get_nearest_token_and_content()
     if err then
         error("could not get target_json")
         return
     end
 
-    local formatted = jq.get_formatted(target_json)
-    if formatted == nil or formatted == "" then
-        error("result was nil or empty")
+    minifier.minify_and_put(input_json, target_node)
+end
+
+function M.format_token()
+    local target_node, json, err = utils.get_nearest_token_and_content()
+    if err then
+        error("could not get target_json")
         return
     end
-    local lines = utils.split(formatted, "\n\r")
 
-    local indentation_node = target_node
-    while true do
-        if indentation_node:type() == "document" or indentation_node:type() == "pair" then
-            break
-        else
-            indentation_node = indentation_node:parent()
-        end
-    end
-
-    local _, start_col = indentation_node:start()
-
-    if not (target_node:prev_named_sibling() ~= nil and target_node:prev_named_sibling():type() == "string") then
-        start_col = start_col + 2
-    end
-
-    local indentation = ""
-    for _ = 1, start_col do
-        indentation = indentation .. " "
-    end
-    for i = 2, #lines do
-        lines[i] = indentation .. lines[i]
-    end
-
-    local start_row, start_col, end_row, end_col = target_node:range()
-    local cur_buf = vim.api.nvim_get_current_buf()
-    vim.api.nvim_buf_set_text(cur_buf, start_row, start_col, end_row, end_col, lines)
+    formatter.format_and_put(json, target_node)
 end
 
 function M.escape_file()
