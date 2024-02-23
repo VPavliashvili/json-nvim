@@ -42,4 +42,16 @@ function M.UnescapeSelection()
     jn.unescape_selection()
 end
 
+function M.KeysToSnakeCase()
+    jn.switch_to_snake_case()
+end
+
+function M.KeysToCamelCase()
+    jn.switch_to_camel_case()
+end
+
+function M.KeysToPascalCase()
+    jn.switch_to_pascal_case()
+end
+
 return M

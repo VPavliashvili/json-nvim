@@ -3,6 +3,69 @@ local M = {}
 -- some of the functions below
 -- are just in case
 
+function M.get_jq_modules_directory()
+    local file_separator = ""
+    if vim.fn.has("win32") == 1 then
+        file_separator = "\\"
+    else
+        file_separator = "/"
+    end
+
+    local init_path = debug.getinfo(1).source
+    local target_index = 0
+    local separator_encountered = 0
+    for i = #init_path, 1, -1 do
+        if init_path:sub(i, i) == file_separator then
+            separator_encountered = separator_encountered + 1
+            if separator_encountered == 3 then
+                target_index = i
+                break
+            end
+        end
+    end
+
+    local result = init_path:sub(2, target_index)
+    result = result .. "jq_modules"
+    return result
+end
+
+---takes json string as keys and returns which casing is used
+---@param input string
+---@return string
+function M.get_casing(input)
+    local keys = M.split(input, "\n\r")
+    table.remove(keys, 1)
+    table.remove(keys, #keys)
+    for i, key in pairs(keys) do
+        local k = key:gsub("%s+", "")
+        k = k:gsub('"', "")
+        keys[i] = k
+    end
+
+    table.sort(keys, function(a, b)
+        return #a > #b
+    end)
+    if keys == nil then
+        error("sorting fked up")
+    end
+    local largest_key = keys[1]
+
+    local splits = M.split(largest_key, "_")
+    vim.print(splits)
+
+    if #splits > 1 then
+        return "snake"
+    end
+
+    local word = splits[1]
+    local first = word:sub(1, 1)
+    if first == string.upper(first) then
+        return "pascal"
+    end
+
+    return "camel"
+end
+
 function M.split(inputstr, sep)
     if sep == nil then
         sep = "%s"

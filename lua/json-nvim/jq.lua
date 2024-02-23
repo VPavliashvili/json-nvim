@@ -1,5 +1,12 @@
 local M = {}
 
+function M.get_keys(json)
+    local cmd = string.format("echo '%s' | jq 'keys_unsorted'", json)
+    local keys = vim.fn.system(cmd)
+
+    return keys
+end
+
 ---takes valid json string and returns its formatted form
 ---@param input string
 ---@return string
@@ -81,6 +88,18 @@ function M.is_valid(input)
     end
 
     return found_error == nil or found_error == 0
+end
+
+---@param target_case string
+---@param from_case string
+---@param target_json string
+---@param jq_modules string
+---@return string
+function M.switch_key_casing_to(target_case, from_case, target_json, jq_modules)
+    local cmd = string.format("echo '%s' | jq -L %s 'map_keys(%s|%s)'", target_json, jq_modules, from_case, target_case)
+    print(cmd)
+    local result = vim.fn.system(cmd)
+    return result
 end
 
 return M

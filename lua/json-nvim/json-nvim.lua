@@ -157,4 +157,30 @@ function M.unescape_selection()
     utils.replace_tsnode_text(target_node, unescaped)
 end
 
+local function switch_casing(to)
+    local jq_modules = utils.get_jq_modules_directory()
+
+    local target_json = utils.get_buffer_content_as_string()
+    target_json = jq.get_collapsed(target_json)
+    local keys = jq.get_keys(target_json)
+    local from = utils.get_casing(keys)
+    from = "from_" .. from
+    local modified = jq.switch_key_casing_to(to, from, target_json, jq_modules)
+    local root = utils.get_treesitter_root()
+    minifier.minify_and_put(modified, root)
+    formatter.format_file()
+end
+
+function M.switch_to_snake_case()
+    switch_casing("to_snake")
+end
+
+function M.switch_to_camel_case()
+    switch_casing("to_camel")
+end
+
+function M.switch_to_pascal_case()
+    switch_casing("to_pascal")
+end
+
 return M
