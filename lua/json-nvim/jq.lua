@@ -97,7 +97,6 @@ end
 ---@return string
 function M.switch_key_casing_to(target_case, from_case, target_json, jq_modules)
     local cmd = string.format("echo '%s' | jq -L %s 'map_keys(%s|%s)'", target_json, jq_modules, from_case, target_case)
-    print(cmd)
     local result = vim.fn.system(cmd)
     return result
 end

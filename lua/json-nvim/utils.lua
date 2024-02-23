@@ -51,7 +51,6 @@ function M.get_casing(input)
     local largest_key = keys[1]
 
     local splits = M.split(largest_key, "_")
-    vim.print(splits)
 
     if #splits > 1 then
         return "snake"
