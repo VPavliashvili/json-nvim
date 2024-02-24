@@ -29,7 +29,8 @@
 Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 ```lua
 {
-    "VPavliashvili/json-nvim"
+    "VPavliashvili/json-nvim",
+    ft = "json", -- only load for json filetype
 }
 ``````
 
