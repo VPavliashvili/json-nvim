@@ -3,7 +3,7 @@ local M = {}
 -- some of the functions below
 -- are just in case
 
-function M.get_jq_modules_directory()
+function M.get_plugin_root()
     local file_separator = ""
     if vim.fn.has("win32") == 1 then
         file_separator = "\\"
@@ -12,6 +12,11 @@ function M.get_jq_modules_directory()
     end
 
     local init_path = debug.getinfo(1).source
+
+    if not init_path:find("\\") then
+        file_separator = "/"
+    end
+
     local target_index = 0
     local separator_encountered = 0
     for i = #init_path, 1, -1 do
@@ -25,6 +30,11 @@ function M.get_jq_modules_directory()
     end
 
     local result = init_path:sub(2, target_index)
+    return result
+end
+
+function M.get_jq_modules_directory()
+    local result = M.get_plugin_root()
     result = result .. "jq_modules"
     return result
 end
