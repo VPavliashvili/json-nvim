@@ -1,5 +1,19 @@
+local utils = require("json-nvim.utils")
+
+local temp_file_path = utils.get_plugin_root() .. "temp.json"
+
+local function write_to_temp(input)
+    local f = io.open(temp_file_path, "w")
+    f:write(input)
+    f:close()
+end
+
 local M = {}
 
+---get all keys from json text
+---this function is used for scase_switching feature
+---@param json string
+---@return string[]
 function M.get_keys(json)
     local cmd = string.format("echo '%s' | jq 'keys_unsorted'", json)
     local keys = vim.fn.system(cmd)
@@ -14,8 +28,8 @@ function M.get_formatted(input)
     local result
     local cmd
     if vim.fn.has("win32") == 1 then
-        local one_line = vim.fn.substitute(input, [[\n]], "", "g")
-        cmd = string.format("echo %s | jq .", one_line)
+        write_to_temp(input)
+        cmd = "jq . " .. temp_file_path
         result = vim.fn.system(cmd)
     else
         cmd = string.format("echo '%s' | jq .", input)
@@ -32,8 +46,8 @@ function M.get_collapsed(input)
     local result
     local cmd
     if vim.fn.has("win32") == 1 then
-        local one_line = vim.fn.substitute(input, [[\n]], "", "g")
-        cmd = string.format("echo %s | jq -c .", one_line)
+        write_to_temp(input)
+        cmd = "jq -c . " .. temp_file_path
         result = vim.fn.system(cmd)
         result = vim.fn.substitute(result, [[\n]], "", "g")
     else
@@ -53,8 +67,8 @@ function M.get_rawed(input)
     local result
     local cmd
     if vim.fn.has("win32") == 1 then
-        local one_line = vim.fn.substitute(input, [[\n]], "", "g")
-        cmd = string.format("echo %s | jq -r .", one_line)
+        write_to_temp(input)
+        cmd = "jq -r . " .. temp_file_path
         result = vim.fn.system(cmd)
         result = vim.fn.substitute(result, [[\n]], "", "g")
     else
@@ -74,8 +88,8 @@ function M.is_valid(input)
     local cmd
     local result
     if vim.fn.has("win32") == 1 then
-        local one_line = vim.fn.substitute(input, [[\n]], "", "g")
-        cmd = string.format("echo %s | jq . -e", one_line)
+        write_to_temp(input)
+        cmd = "jq . -e " .. temp_file_path
         result = vim.fn.system(cmd)
         result = vim.fn.substitute(result, [[\n]], "", "g")
 
