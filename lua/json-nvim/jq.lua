@@ -84,24 +84,25 @@ end
 ---@param input string
 ---@return boolean
 function M.is_valid(input)
-    local found_error
     local cmd
     local result
     if vim.fn.has("win32") == 1 then
         write_to_temp(input)
         cmd = "jq . -e " .. temp_file_path
         result = vim.fn.system(cmd)
+        local exit_status = vim.v.shell_error
+
         result = vim.fn.substitute(result, [[\n]], "", "g")
 
-        found_error = result:find("jq . %-e") or result:find("error")
+        return exit_status == 0
     else
         cmd = string.format("echo '%s' | jq -e .", input)
         result = vim.fn.system(cmd)
 
-        found_error = result:find("error")
-    end
+        local exit_status = vim.v.shell_error
 
-    return found_error == nil or found_error == 0
+        return exit_status == 0
+    end
 end
 
 ---@param target_case string
