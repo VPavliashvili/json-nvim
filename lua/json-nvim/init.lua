@@ -54,4 +54,8 @@ function M.KeysToPascalCase()
     jn.switch_to_pascal_case()
 end
 
+function M.test_trial()
+    return "hello world"
+end
+
 return M

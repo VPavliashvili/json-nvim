@@ -75,6 +75,9 @@ function M.get_casing(input)
     return "camel"
 end
 
+---@param inputstr string
+---@param sep string
+---@return string[]
 function M.split(inputstr, sep)
     if sep == nil then
         sep = "%s"

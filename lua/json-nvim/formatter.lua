@@ -10,7 +10,7 @@ local function get_indentation_node(target_node)
         if indentation_node:type() == "document" or indentation_node:type() == "pair" then
             break
         else
-            indentation_node = indentation_node:parent()
+            indentation_node = indentation_node:parent() or indentation_node
         end
     end
 
@@ -19,23 +19,23 @@ end
 
 local M = {}
 
-function M.format_file()
+--- formats and returns replacement text for whole file
+--- @return string[] replacement text as array of lines of text
+function M.get_formatted_file_content()
     local content = utils.get_buffer_content_as_string()
     local formatted = jq.get_formatted(content)
     if formatted == nil or formatted == "" then
         error("result was nil or empty")
-        return
     end
     local replacement = utils.split(formatted, "\n\r")
 
-    local root = utils.get_treesitter_root()
-    utils.replace_tsnode_text(root, replacement)
+    return replacement
 end
 
---- formats and puts input json to current buffer's target node
+---returns formatted json from provided token
 ---@param input_json string
 ---@param target_node TSNode
-function M.format_and_put(input_json, target_node)
+function M.get_formatted_token(input_json, target_node)
     local formatted = jq.get_formatted(input_json)
     if formatted == nil or formatted == "" then
         error("result was nil or empty")
@@ -57,10 +57,6 @@ function M.format_and_put(input_json, target_node)
     for i = 2, #lines do
         lines[i] = indentation .. lines[i]
     end
-
-    local start_row, start_col, end_row, end_col = target_node:range()
-    local cur_buf = vim.api.nvim_get_current_buf()
-    vim.api.nvim_buf_set_text(cur_buf, start_row, start_col, end_row, end_col, lines)
 end
 
 return M

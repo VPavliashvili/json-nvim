@@ -3,6 +3,7 @@ local formatter = require("json-nvim.formatter")
 local jq = require("json-nvim.jq")
 local minifier = require("json-nvim.minifier")
 local utils = require("json-nvim.utils")
+local renderer = require("json-nvim.renderer")
 
 ---sometimes buffer with valid json content is not
 ---set to `json` filetype, for example `log.log`
@@ -48,7 +49,10 @@ end
 local M = {}
 
 function M.format_file()
-    validate_and_run_operation(formatter.format_file)
+    if validate_and_set_buffer_filetype() then
+        local replacement = formatter.get_formatted_file_content()
+        renderer.render_root_token(replacement)
+    end
 end
 
 function M.minify_file()
@@ -222,6 +226,8 @@ local function switch_casing(to)
         local modified = jq.switch_key_casing_to(to, from, target_json, jq_modules)
         local root = utils.get_treesitter_root()
         minifier.minify_and_put(modified, root)
+
+        -- TODO format file replaced with renderer code
         formatter.format_file()
     end)
 end
