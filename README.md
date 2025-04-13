@@ -106,5 +106,6 @@ Commands involving visual mode always should be used with valid json selection
 
 ## TODO
 
+- [ ] Introduce testing, Implement tests and refactor code accordingly
 - [ ] Implement windows support for case switching
 - [x] Fix bug: Can't process long json buffers on windows due to [cmd string limitation](https://learn.microsoft.com/en-us/troubleshoot/windows-client/shell-experience/command-line-string-limitation)

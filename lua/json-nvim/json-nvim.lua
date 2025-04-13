@@ -2,8 +2,8 @@ local escaper = require("json-nvim.escaper")
 local formatter = require("json-nvim.formatter")
 local jq = require("json-nvim.jq")
 local minifier = require("json-nvim.minifier")
-local utils = require("json-nvim.utils")
 local renderer = require("json-nvim.renderer")
+local utils = require("json-nvim.utils")
 
 ---sometimes buffer with valid json content is not
 ---set to `json` filetype, for example `log.log`
@@ -50,7 +50,8 @@ local M = {}
 
 function M.format_file()
     if validate_and_set_buffer_filetype() then
-        local replacement = formatter.get_formatted_file_content()
+        local content = utils.get_buffer_content_as_string()
+        local replacement = formatter.get_formatted_buffer(content)
         renderer.render_root_token(replacement)
     end
 end
@@ -106,19 +107,21 @@ function M.format_selection()
         local buf_id = vim.api.nvim_get_current_buf()
 
         local json = vim.treesitter.get_node_text(target_node, buf_id)
+        print(json)
         if json == nil or json == "" then
             error("content was nil or empty")
             return
         end
 
-        formatter.format_and_put(json, target_node)
+        local replacement = formatter.get_formatted_token(json, target_node)
+        renderer.render_specific_token(target_node, replacement)
     end)
 end
 
 function M.minify_token()
     validate_and_run_operation(function()
         local target_node, input_json, err = utils.get_nearest_token_and_content()
-        if err then
+        if err or target_node == nil then
             error("could not get target_json")
             return
         end
@@ -130,12 +133,13 @@ end
 function M.format_token()
     validate_and_run_operation(function()
         local target_node, json, err = utils.get_nearest_token_and_content()
-        if err then
+        if err or target_node == nil then
             error("could not get target_json")
             return
         end
 
-        formatter.format_and_put(json, target_node)
+        local replacement = formatter.get_formatted_token(json, target_node)
+        renderer.render_specific_token(target_node, replacement)
     end)
 end
 
@@ -227,8 +231,9 @@ local function switch_casing(to)
         local root = utils.get_treesitter_root()
         minifier.minify_and_put(modified, root)
 
-        -- TODO format file replaced with renderer code
-        formatter.format_file()
+        local content = utils.get_buffer_content_as_string()
+        local replacement = formatter.get_formatted_buffer(content)
+        renderer.render_root_token(replacement)
     end)
 end
 

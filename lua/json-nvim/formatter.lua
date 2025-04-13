@@ -20,10 +20,15 @@ end
 local M = {}
 
 --- formats and returns replacement text for whole file
+--- @param input string buffer content as string
 --- @return string[] replacement text as array of lines of text
-function M.get_formatted_file_content()
-    local content = utils.get_buffer_content_as_string()
-    local formatted = jq.get_formatted(content)
+function M.get_formatted_buffer(input)
+    local is_valid = jq.is_valid(input)
+    if is_valid == false then
+        error("provided input was not a valid json")
+    end
+
+    local formatted = jq.get_formatted(input)
     if formatted == nil or formatted == "" then
         error("result was nil or empty")
     end
@@ -35,18 +40,25 @@ end
 ---returns formatted json from provided token
 ---@param input_json string
 ---@param target_node TSNode
+---@return string[] replacement text as array of lines of text
 function M.get_formatted_token(input_json, target_node)
+    local is_valid = jq.is_valid(input_json)
+    if is_valid == false then
+        error("provided input was not a valid json")
+    end
+
     local formatted = jq.get_formatted(input_json)
     if formatted == nil or formatted == "" then
         error("result was nil or empty")
-        return
     end
     local lines = utils.split(formatted, "\n\r")
 
     local indentation_node = get_indentation_node(target_node)
     local _, start_col = indentation_node:start()
 
-    if not (target_node:prev_named_sibling() ~= nil and target_node:prev_named_sibling():type() == "string") then
+    if target_node:parent():type() == "document" then
+        print("root object is being formatted")
+    elseif not (target_node:prev_named_sibling() ~= nil and target_node:prev_named_sibling():type() == "string") then
         start_col = start_col + 2
     end
 
@@ -54,9 +66,11 @@ function M.get_formatted_token(input_json, target_node)
     for _ = 1, start_col do
         indentation = indentation .. " "
     end
-    for i = 2, #lines do
+    for i = 1, #lines do
         lines[i] = indentation .. lines[i]
     end
+
+    return lines
 end
 
 return M
