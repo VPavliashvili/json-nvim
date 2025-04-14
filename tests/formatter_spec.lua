@@ -78,7 +78,6 @@ describe("get_formatted_token", function()
 
             local actual = formatter.get_formatted_token(input, target_node)
 
-            print("Actual result type:", type(actual))
             print("Actual result:", vim.inspect(actual))
 
             eq(expected, actual)
@@ -105,7 +104,6 @@ describe("get_formatted_token", function()
 
         local actual = formatter.get_formatted_token(input, target_node)
 
-        print("Actual result type:", type(actual))
         print("Actual result:", vim.inspect(actual))
 
         eq(expected, actual)
@@ -130,7 +128,6 @@ describe("get_formatted_token", function()
 
         local actual = formatter.get_formatted_token(input, target_node)
 
-        print("Actual result type:", type(actual))
         print("Actual result:", vim.inspect(actual))
 
         eq(expected, actual)
@@ -181,7 +178,6 @@ describe("get_formatted_buffer", function()
         }
         local actual = formatter.get_formatted_buffer(input)
 
-        print("Actual result type:", type(actual))
         print("Actual result:", vim.inspect(actual))
 
         eq(expected, actual)
@@ -209,7 +205,6 @@ describe("get_formatted_buffer", function()
 
         local actual = formatter.get_formatted_buffer(input)
 
-        print("Actual result type:", type(actual))
         print("Actual result:", vim.inspect(actual))
 
         eq(expected, actual)
@@ -237,7 +232,6 @@ describe("get_formatted_buffer", function()
 
         local actual = formatter.get_formatted_buffer(input)
 
-        print("Actual result type:", type(actual))
         print("Actual result:", vim.inspect(actual))
 
         eq(expected, actual)

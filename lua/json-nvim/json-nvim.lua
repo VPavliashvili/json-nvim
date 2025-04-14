@@ -57,7 +57,11 @@ function M.format_file()
 end
 
 function M.minify_file()
-    validate_and_run_operation(minifier.minify_file)
+    if validate_and_set_buffer_filetype() then
+        local content = utils.get_buffer_content_as_string()
+        local replacement = minifier.get_minified_json(content)
+        renderer.render_root_token(replacement)
+    end
 end
 
 function M.minify_selection()
@@ -84,7 +88,8 @@ function M.minify_selection()
             return
         end
 
-        minifier.minify_and_put(input_json, target_node)
+        local replacement = minifier.get_minified_json(input_json)
+        renderer.render_specific_token(target_node, replacement)
     end)
 end
 
@@ -107,7 +112,6 @@ function M.format_selection()
         local buf_id = vim.api.nvim_get_current_buf()
 
         local json = vim.treesitter.get_node_text(target_node, buf_id)
-        print(json)
         if json == nil or json == "" then
             error("content was nil or empty")
             return
@@ -126,7 +130,8 @@ function M.minify_token()
             return
         end
 
-        minifier.minify_and_put(input_json, target_node)
+        local replacement = minifier.get_minified_json(input_json)
+        renderer.render_specific_token(target_node, replacement)
     end)
 end
 
@@ -229,7 +234,9 @@ local function switch_casing(to)
         from = "from_" .. from
         local modified = jq.switch_key_casing_to(to, from, target_json, jq_modules)
         local root = utils.get_treesitter_root()
-        minifier.minify_and_put(modified, root)
+
+        local minified_replacement = minifier.get_minified_json(modified)
+        renderer.render_specific_token(root, minified_replacement)
 
         local content = utils.get_buffer_content_as_string()
         local replacement = formatter.get_formatted_buffer(content)
