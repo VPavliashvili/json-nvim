@@ -1,0 +1,26 @@
+name: Run Neovim Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: neovim
+          version: 1.0
+
+      - name: Run Lua Tests
+        env:
+          TMPDIR: ${{ runner.temp }}
+          TEMP: ${{ runner.temp }}
+        run: nvim --headless -l tests/run_tests.lua
+

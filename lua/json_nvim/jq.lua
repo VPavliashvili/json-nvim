@@ -1,17 +1,27 @@
-local utils = require("json-nvim.utils")
+local utils = require("json_nvim.utils")
 
-local temp_file_path = utils.get_plugin_root() .. "temp.json"
+local temp_file_path, os_file_sep = utils.get_os_temp_file_path()
 
-local function write_to_temp(input)
-    local f = io.open(temp_file_path, "w")
-    f:write(input)
+temp_file_path = temp_file_path .. os_file_sep .. "json_nvim_"
+
+--write data to a temporary file in plugin root
+---@param arg { input: string, operation: string }
+---@return string
+local function write_to_temp(arg)
+    if type(arg.input) ~= "string" then
+        error("no input to write_to_temp()")
+    end
+    local tmp_file = temp_file_path .. os.time() .. (arg.operation and ("-" .. arg.operation .. ".json") or ".json")
+    local f = io.open(tmp_file, "w")
+    f:write(arg.input)
     f:close()
+    return tmp_file
 end
 
 local M = {}
 
 ---get all keys from json text
----this function is used for scase_switching feature
+---this function is used for case_switching feature
 ---@param json string
 ---@return string[]
 function M.get_keys(json)
@@ -27,12 +37,12 @@ end
 function M.get_formatted(input)
     local result
     local cmd
+    local tmp_file = write_to_temp({ input = input, operation = "get_formatted" })
     if vim.fn.has("win32") == 1 then
-        write_to_temp(input)
-        cmd = "jq . " .. temp_file_path
+        cmd = "jq . " .. tmp_file
         result = vim.fn.system(cmd)
     else
-        cmd = string.format("echo '%s' | jq .", input)
+        cmd = "jq . -e " .. tmp_file
         result = vim.fn.system(cmd)
     end
 
@@ -45,17 +55,16 @@ end
 function M.get_collapsed(input)
     local result
     local cmd
+    local tmp_file = write_to_temp({ input = input, operation = "get_collapsed" })
     if vim.fn.has("win32") == 1 then
-        write_to_temp(input)
-        cmd = "jq -c . " .. temp_file_path
+        cmd = "jq -c . " .. tmp_file
         result = vim.fn.system(cmd)
         result = vim.fn.substitute(result, [[\n]], "", "g")
     else
-        cmd = string.format("echo '%s' | jq -c .", input)
+        cmd = "jq -c . " .. tmp_file
         result = vim.fn.system(cmd)
-        result = result:gsub("[\n\r]", "")
+        result = result:gsub("\r?\n", "")
     end
-
     return result
 end
 
@@ -66,13 +75,13 @@ end
 function M.get_rawed(input)
     local result
     local cmd
+    local tmp_file = write_to_temp({ input = input, operation = "get_rawed" })
     if vim.fn.has("win32") == 1 then
-        write_to_temp(input)
-        cmd = "jq -r . " .. temp_file_path
+        cmd = "jq -r . " .. tmp_file
         result = vim.fn.system(cmd)
         result = vim.fn.substitute(result, [[\n]], "", "g")
     else
-        cmd = string.format("echo '%s' | jq -r .", input)
+        cmd = "jq . -r " .. tmp_file
         result = vim.fn.system(cmd)
         result = result:gsub("[\n\r]", "")
     end
@@ -86,9 +95,9 @@ end
 function M.is_valid(input)
     local cmd
     local result
+    local tmp_file = write_to_temp({ input = input, operation = "is_valid" })
     if vim.fn.has("win32") == 1 then
-        write_to_temp(input)
-        cmd = "jq . -e " .. temp_file_path
+        cmd = "jq . -e " .. tmp_file
         result = vim.fn.system(cmd)
         local exit_status = vim.v.shell_error
 
@@ -96,9 +105,8 @@ function M.is_valid(input)
 
         return exit_status == 0
     else
-        cmd = string.format("echo '%s' | jq -e .", input)
+        cmd = "jq . -e " .. tmp_file .. "</dev/null"
         result = vim.fn.system(cmd)
-
         local exit_status = vim.v.shell_error
 
         return exit_status == 0

@@ -1,4 +1,4 @@
-local json_nvim = require("json-nvim")
+local json_nvim = require("json_nvim")
 
 local function command(name, callback, options)
     local final_opts = vim.tbl_deep_extend("force", options or {}, { bang = true })
@@ -21,11 +21,11 @@ command("JsonMinifySelection", function()
     json_nvim.MinifySelection()
 end, { range = true })
 
-command("JsonFormatToken", function()
+command("JsonFormatNode", function()
     json_nvim.FormatToken()
 end)
 
-command("JsonMinifyToken", function()
+command("JsonMinifyNode", function()
     json_nvim.MinifyToken()
 end)
 

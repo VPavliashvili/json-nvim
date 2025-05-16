@@ -1,8 +1,8 @@
-local escaper = require("json-nvim.escaper")
-local formatter = require("json-nvim.formatter")
-local jq = require("json-nvim.jq")
-local minifier = require("json-nvim.minifier")
-local utils = require("json-nvim.utils")
+local escaper = require("json_nvim.escaper")
+local formatter = require("json_nvim.formatter")
+local jq = require("json_nvim.jq")
+local minifier = require("json_nvim.minifier")
+local utils = require("json_nvim.utils")
 
 ---sometimes buffer with valid json content is not
 ---set to `json` filetype, for example `log.log`
@@ -26,7 +26,7 @@ local function validate_and_set_buffer_filetype()
             end
 
             if choice ~= "y" then
-                print("json-nvim operation cancelled")
+                print("json_nvim operation cancelled")
             else
                 vim.bo.filetype = "json"
                 res = true

@@ -1,4 +1,4 @@
-local jn = require("json-nvim.json-nvim")
+local jn = require("json_nvim.json_nvim")
 
 local M = {}
 

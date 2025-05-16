@@ -2,21 +2,19 @@ local M = {}
 
 -- some of the functions below
 -- are just in case
-
-function M.get_plugin_root()
-    local file_separator = ""
-    if vim.fn.has("win32") == 1 then
-        file_separator = "\\"
-    else
-        file_separator = "/"
-    end
-
+---@return string
+local function get_os_file_separator()
+    local file_separator
     local init_path = debug.getinfo(1).source
 
     if not init_path:find("\\") then
         file_separator = "/"
     end
+    return file_separator
+end
 
+function M.get_plugin_root()
+    local file_separator = get_os_file_separator()
     local target_index = 0
     local separator_encountered = 0
     for i = #init_path, 1, -1 do
@@ -37,6 +35,23 @@ function M.get_jq_modules_directory()
     local result = M.get_plugin_root()
     result = result .. "jq_modules"
     return result
+end
+
+-- Returns the OS TMP DIR and path_separator
+---@return string?
+---@return string
+function M.get_os_temp_file_path()
+    local tmp_dir
+    if vim.fn.has("win32") == 1 then
+        tmp_dir = os.getenv("TEMP")
+    else
+        tmp_dir = os.getenv("TMPDIR")
+    end
+    if not tmp_dir then
+        error("json_nvim uses temp files. Either $TEMP (Windows) or $TMPDIR (Unix) must be defined")
+    end
+
+    return tmp_dir, get_os_file_separator()
 end
 
 ---takes json string as keys and returns which casing is used

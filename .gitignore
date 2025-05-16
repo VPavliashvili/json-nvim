@@ -1,2 +1,4 @@
 vendor/plenary.nvim
 temp.json
+tests/**.actual
+tests/**.expected

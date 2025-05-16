@@ -29,7 +29,7 @@
 Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 ```lua
 {
-    "VPavliashvili/json-nvim",
+    "jaredbarranco/json-nvim",
     ft = "json", -- only load for json filetype
 }
 ``````
@@ -66,13 +66,13 @@ Commands involving visual mode always should be used with valid json selection
         <summary> see example </summary>
         ![minify_selection](https://github.com/VPavliashvili/json-nvim/assets/40483227/b1b14d2e-e920-415b-9bf3-60afa920b3fd)
      </details>
-* `:JsonFormatToken`<details>
+* `:JsonFormatNode`<details>
         <summary> see example </summary>
-    ![format_token](https://github.com/VPavliashvili/json-nvim/assets/40483227/7ba1bbe7-020e-41be-bd50-714aa22ff28c)
+    ![format_node](https://github.com/VPavliashvili/json-nvim/assets/40483227/7ba1bbe7-020e-41be-bd50-714aa22ff28c)
     </details>
-* `:JsonMinifyToken`<details>
+* `:JsonMinifyNode`<details>
         <summary> see example </summary>
-   ![minify_token](https://github.com/VPavliashvili/json-nvim/assets/40483227/d285497d-e863-49f9-965b-42ec14e0a5cd)
+   ![minify_node](https://github.com/VPavliashvili/json-nvim/assets/40483227/d285497d-e863-49f9-965b-42ec14e0a5cd)
      </details>
 * `:JsonEscapeFile`<details>
         <summary> see example </summary>

@@ -1,5 +1,5 @@
-local jq = require("json-nvim.jq")
-local utils = require("json-nvim.utils")
+local jq = require("json_nvim.jq")
+local utils = require("json_nvim.utils")
 
 local function get_escaped_input(input)
     local compacted = jq.get_collapsed(input)
@@ -21,11 +21,23 @@ end
 
 local M = {}
 
+function M.escape_string(input)
+    local result = get_escaped_input(input)
+    assert(result and result ~= "", "escaped result was nil or empty")
+    return result
+end
+
+function M.unescape_string(input)
+    local result = get_unescaped_input(input)
+    assert(result and result ~= "", "unescaped result was nil or empty")
+    return result
+end
+
 function M.escape_file()
     local root = utils.get_treesitter_root()
 
     local content = utils.get_buffer_content_as_string()
-    local escaped = get_escaped_input(content)
+    local escaped = M.escape_string(content)
     utils.replace_tsnode_text(root, escaped)
 end
 
@@ -38,7 +50,7 @@ function M.unescape_file()
         return
     end
 
-    local unescaped = get_unescaped_input(content)
+    local unescaped = M.unescape_string(content)
     utils.replace_tsnode_text(root, unescaped)
 
     M.unescape_file()

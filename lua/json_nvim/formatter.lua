@@ -1,5 +1,5 @@
-local jq = require("json-nvim.jq")
-local utils = require("json-nvim.utils")
+local jq = require("json_nvim.jq")
+local utils = require("json_nvim.utils")
 
 ---comment
 ---@param target_node TSNode
@@ -19,13 +19,15 @@ end
 
 local M = {}
 
+function M.format_string(json_string)
+    local result = jq.get_formatted(json_string)
+    assert(result and result ~= "", "minified result was nil or empty")
+    return result
+end
+
 function M.format_file()
     local content = utils.get_buffer_content_as_string()
-    local formatted = jq.get_formatted(content)
-    if formatted == nil or formatted == "" then
-        error("result was nil or empty")
-        return
-    end
+    local formatted = M.format_string(content)
     local replacement = utils.split(formatted, "\n\r")
 
     local root = utils.get_treesitter_root()
@@ -36,7 +38,7 @@ end
 ---@param input_json string
 ---@param target_node TSNode
 function M.format_and_put(input_json, target_node)
-    local formatted = jq.get_formatted(input_json)
+    local formatted = M.format_string(input_json)
     if formatted == nil or formatted == "" then
         error("result was nil or empty")
         return
